@@ -18,6 +18,21 @@ class BlockTest(NamedTuple):
 
 tests = [
     BlockTest(
+        [Block(PositionVerdict.Rejected, 1)],
+        [Block(PositionVerdict.Rejected, 1)],
+        2,
+    ),
+    BlockTest(
+        [Block(PositionVerdict.Rejected, 2)],
+        [Block(PositionVerdict.Rejected, 2)],
+        2,
+    ),
+    BlockTest(
+        [Block(PositionVerdict.Rejected, 3)],
+        [Block(PositionVerdict.Rejected, 3)],
+        2,
+    ),
+    BlockTest(
         [Block(ConservationDegree.NonConserved, 1)],
         [Block(PositionVerdict.Rejected, 1)],
         2,

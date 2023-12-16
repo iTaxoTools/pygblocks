@@ -43,6 +43,11 @@ class PositionVerdict(StrEnum):
     Rejected = "."
 
 
+class GapCharacters(StrEnum):
+    Gap = "-"
+    Any = "+"
+
+
 class Block(NamedTuple):
     letter: str
     length: int

@@ -2,7 +2,7 @@ from collections import Counter
 from itertools import groupby
 from typing import Iterator
 
-from .types import Block, ConservationDegree, Options, PositionVerdict
+from .types import Block, ConservationDegree, GapCharacters, Options, PositionVerdict
 
 
 def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
@@ -20,9 +20,15 @@ def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
     blocks = [Block(letter, sum(1 for _ in group)) for letter, group in groups]
 
     blocks = reject_nonconserved_blocks(blocks, options)
+
     blocks = reject_all_flank_blocks(blocks)
 
     blocks = reject_short_blocks(blocks, options.BL1)
+
+    gaps = (has_gaps for _, has_gaps in positions)
+    blocks = reject_gaps_within_blocks(blocks, gaps)
+
+    blocks = reject_short_blocks(blocks, options.BL2)
 
     print("".join(c for c, _ in positions))
     raise NotImplementedError
@@ -30,9 +36,9 @@ def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
 
 def analyze_column(column: Iterator[str], options: Options) -> tuple[ConservationDegree, bool]:
     counter = Counter(column)
-    has_gaps = "-" in counter
+    has_gaps = GapCharacters.Gap in counter
     first_common, *others = counter.most_common(2)
-    if first_common[0] == "-" and others:
+    if first_common[0] == GapCharacters.Gap and others:
         first_common = others[0]
     conservation_degree = _get_conservation_degree(first_common[1], has_gaps, options)
     return (conservation_degree, has_gaps)
@@ -99,6 +105,23 @@ def _reject_short_memorized_block(memory: list[Block], threshold: int) -> Iterat
         memory = []
     else:
         yield from memory
+
+
+def reject_gaps_within_blocks(blocks: list[Block], gaps: Iterator[bool]) -> list[Block]:
+    return list(_reject_gaps_within_blocks(blocks, iter(gaps)))
+
+
+def _reject_gaps_within_blocks(blocks: list[Block], gaps: Iterator[bool]) -> Iterator[Block]:
+    for block in blocks:
+        if block.letter == ConservationDegree.NonConserved:
+            if any((next(gaps) for _ in range(block.length))):
+                yield Block(PositionVerdict.Rejected, block.length)
+            else:
+                yield block
+        else:
+            for _ in range(block.length):
+                next(gaps)
+            yield block
 
 
 def trim_sequences(mask: str, sequences: Iterator[str]) -> Iterator[str]:
