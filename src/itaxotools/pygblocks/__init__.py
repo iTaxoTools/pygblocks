@@ -21,6 +21,16 @@ def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
 
     blocks = reject_nonconserved_blocks(blocks, options)
 
+    # print("OONE")
+    # for block in blocks:
+    #     print(block)
+
+    # blocks = reject_all_flank_blocks(blocks)
+
+    # print("TTWO")
+    # for block in blocks:
+    #     print(block)
+
     print("".join(c for c, _ in positions))
     raise NotImplementedError
 
@@ -54,6 +64,21 @@ def reject_nonconserved_block(block: Block, threshold: int) -> Block:
         if block.length > threshold:
             return Block(PositionVerdict.Rejected, block.length)
     return block
+
+
+def reject_all_flank_blocks(blocks: list[Block]) -> list[Block]:
+    blocks = list(reject_left_flank_blocks(blocks))
+    blocks = list(reject_left_flank_blocks(blocks[::-1]))
+    return blocks[::-1]
+
+
+def reject_left_flank_blocks(blocks: list[Block]) -> Iterator[Block]:
+    pairs = zip(blocks[:-1], blocks[1:])
+    for left, right in pairs:
+        if left.letter != ConservationDegree.HighlyConserved and right.letter == PositionVerdict.Rejected:
+            yield Block(PositionVerdict.Rejected, left.length)
+        else:
+            yield left
 
 
 def trim_sequences(mask: str, sequences: Iterator[str]) -> Iterator[str]:
