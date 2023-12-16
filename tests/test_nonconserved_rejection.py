@@ -17,71 +17,71 @@ class BlockTest(NamedTuple):
     CP: int
 
 
-@pytest.mark.parametrize(
-    "test",
-    [
-        BlockTest(
-            [Block(ConservationDegree.NonConserved, 1)],
-            [Block(ConservationDegree.NonConserved, 1)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.NonConserved, 2)],
-            [Block(ConservationDegree.NonConserved, 2)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.NonConserved, 3)],
-            [Block(PositionVerdict.Rejected, 3)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.Conserved, 1)],
-            [Block(ConservationDegree.Conserved, 1)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.Conserved, 2)],
-            [Block(ConservationDegree.Conserved, 2)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.Conserved, 3)],
-            [Block(ConservationDegree.Conserved, 3)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.HighlyConserved, 1)],
-            [Block(ConservationDegree.HighlyConserved, 1)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.HighlyConserved, 2)],
-            [Block(ConservationDegree.HighlyConserved, 2)],
-            2,
-        ),
-        BlockTest(
-            [Block(ConservationDegree.HighlyConserved, 3)],
-            [Block(ConservationDegree.HighlyConserved, 3)],
-            2,
-        ),
-        BlockTest(
-            [
-                Block(ConservationDegree.HighlyConserved, 1),
-                Block(ConservationDegree.NonConserved, 3),
-                Block(ConservationDegree.Conserved, 3),
-                Block(ConservationDegree.NonConserved, 1),
-            ],
-            [
-                Block(ConservationDegree.HighlyConserved, 1),
-                Block(PositionVerdict.Rejected, 3),
-                Block(ConservationDegree.Conserved, 3),
-                Block(ConservationDegree.NonConserved, 1),
-            ],
-            2,
-        ),
-    ],
-)
+tests = [
+    BlockTest(
+        [Block(ConservationDegree.NonConserved, 1)],
+        [Block(ConservationDegree.NonConserved, 1)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.NonConserved, 2)],
+        [Block(ConservationDegree.NonConserved, 2)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.NonConserved, 3)],
+        [Block(PositionVerdict.Rejected, 3)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.Conserved, 1)],
+        [Block(ConservationDegree.Conserved, 1)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.Conserved, 2)],
+        [Block(ConservationDegree.Conserved, 2)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.Conserved, 3)],
+        [Block(ConservationDegree.Conserved, 3)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.HighlyConserved, 1)],
+        [Block(ConservationDegree.HighlyConserved, 1)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.HighlyConserved, 2)],
+        [Block(ConservationDegree.HighlyConserved, 2)],
+        2,
+    ),
+    BlockTest(
+        [Block(ConservationDegree.HighlyConserved, 3)],
+        [Block(ConservationDegree.HighlyConserved, 3)],
+        2,
+    ),
+    BlockTest(
+        [
+            Block(ConservationDegree.HighlyConserved, 1),
+            Block(ConservationDegree.NonConserved, 3),
+            Block(ConservationDegree.Conserved, 3),
+            Block(ConservationDegree.NonConserved, 1),
+        ],
+        [
+            Block(ConservationDegree.HighlyConserved, 1),
+            Block(PositionVerdict.Rejected, 3),
+            Block(ConservationDegree.Conserved, 3),
+            Block(ConservationDegree.NonConserved, 1),
+        ],
+        2,
+    ),
+]
+
+
+@pytest.mark.parametrize("test", tests)
 def test_nonconserved_rejection(test: BlockTest):
     options = Options(IS=0, FS=0, CP=test.CP, BL1=0, BL2=0)
     assert reject_nonconserved_blocks(test.before, options) == test.after

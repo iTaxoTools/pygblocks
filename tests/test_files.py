@@ -52,11 +52,11 @@ class FileTest(NamedTuple):
         assert False
 
 
-@pytest.mark.parametrize(
-    "test",
-    [
-        FileTest("nad3.pir"),
-    ],
-)
+tests = [
+    FileTest("nad3.pir"),
+]
+
+
+@pytest.mark.parametrize("test", tests)
 def test_files(test: FileTest) -> None:
     test.validate()
