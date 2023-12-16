@@ -20,16 +20,9 @@ def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
     blocks = [Block(letter, sum(1 for _ in group)) for letter, group in groups]
 
     blocks = reject_nonconserved_blocks(blocks, options)
+    blocks = reject_all_flank_blocks(blocks)
 
-    # print("OONE")
-    # for block in blocks:
-    #     print(block)
-
-    # blocks = reject_all_flank_blocks(blocks)
-
-    # print("TTWO")
-    # for block in blocks:
-    #     print(block)
+    blocks = reject_short_blocks(blocks, options.BL1)
 
     print("".join(c for c, _ in positions))
     raise NotImplementedError
@@ -41,11 +34,11 @@ def analyze_column(column: Iterator[str], options: Options) -> tuple[Conservatio
     first_common, *others = counter.most_common(2)
     if first_common[0] == "-" and others:
         first_common = others[0]
-    conservation_degree = get_conservation_degree(first_common[1], has_gaps, options)
+    conservation_degree = _get_conservation_degree(first_common[1], has_gaps, options)
     return (conservation_degree, has_gaps)
 
 
-def get_conservation_degree(count: int, has_gaps: bool, options: Options) -> ConservationDegree:
+def _get_conservation_degree(count: int, has_gaps: bool, options: Options) -> ConservationDegree:
     if has_gaps:
         return ConservationDegree.NonConserved
     if count < options.IS:
@@ -56,10 +49,10 @@ def get_conservation_degree(count: int, has_gaps: bool, options: Options) -> Con
 
 
 def reject_nonconserved_blocks(blocks: list[Block], options: Options) -> list[Block]:
-    return [reject_nonconserved_block(block, options.CP) for block in blocks]
+    return [_reject_nonconserved_block(block, options.CP) for block in blocks]
 
 
-def reject_nonconserved_block(block: Block, threshold: int) -> Block:
+def _reject_nonconserved_block(block: Block, threshold: int) -> Block:
     if block.letter == ConservationDegree.NonConserved:
         if block.length > threshold:
             return Block(PositionVerdict.Rejected, block.length)
@@ -67,12 +60,12 @@ def reject_nonconserved_block(block: Block, threshold: int) -> Block:
 
 
 def reject_all_flank_blocks(blocks: list[Block]) -> list[Block]:
-    blocks = list(reject_left_flank_blocks(blocks))
-    blocks = list(reject_left_flank_blocks(blocks[::-1]))
+    blocks = list(_reject_left_flank_blocks(blocks))
+    blocks = list(_reject_left_flank_blocks(blocks[::-1]))
     return blocks[::-1]
 
 
-def reject_left_flank_blocks(blocks: list[Block]) -> Iterator[Block]:
+def _reject_left_flank_blocks(blocks: list[Block]) -> Iterator[Block]:
     memory = None
     for block in blocks:
         if block.letter != ConservationDegree.HighlyConserved and memory == PositionVerdict.Rejected:
@@ -81,6 +74,31 @@ def reject_left_flank_blocks(blocks: list[Block]) -> Iterator[Block]:
         else:
             memory = block.letter
             yield block
+
+
+def reject_short_blocks(blocks: list[Block], threshold: int) -> list[Block]:
+    return list(_reject_short_blocks(blocks, threshold))
+
+
+def _reject_short_blocks(blocks: list[Block], threshold: int) -> Iterator[Block]:
+    memory: list[Block] = []
+    for block in blocks:
+        if block.letter == PositionVerdict.Rejected:
+            yield from _reject_short_memorized_block(memory, threshold)
+            memory = []
+            yield block
+        else:
+            memory.append(block)
+    yield from _reject_short_memorized_block(memory, threshold)
+
+
+def _reject_short_memorized_block(memory: list[Block], threshold: int) -> Iterator[Block]:
+    length = sum(b.length for b in memory)
+    if 0 < length < threshold:
+        yield Block(PositionVerdict.Rejected, length)
+        memory = []
+    else:
+        yield from memory
 
 
 def trim_sequences(mask: str, sequences: Iterator[str]) -> Iterator[str]:
