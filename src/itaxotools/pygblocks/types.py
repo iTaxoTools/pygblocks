@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import NamedTuple
 
 
 @dataclass
@@ -35,3 +36,13 @@ class ConservationDegree(StrEnum):
     NonConserved = "?"
     Conserved = "$"
     HighlyConserved = "@"
+
+
+class PositionVerdict(StrEnum):
+    Accepted = "#"
+    Rejected = "."
+
+
+class Block(NamedTuple):
+    letter: str
+    length: int

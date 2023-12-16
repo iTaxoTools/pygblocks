@@ -1,7 +1,8 @@
 from collections import Counter
+from itertools import groupby
 from typing import Iterator
 
-from .types import ConservationDegree, Options
+from .types import Block, ConservationDegree, Options, PositionVerdict
 
 
 def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
@@ -13,9 +14,14 @@ def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
     options.update_from_sequence_count(sequence_count)
 
     transposed = zip(*sequences)
-    data = [analyze_column(column, options) for column in transposed]
+    positions = [analyze_column(column, options) for column in transposed]
 
-    print("".join(x for x, _ in data))
+    groups = groupby(letter for letter, _ in positions)
+    blocks = [Block(letter, sum(1 for _ in group)) for letter, group in groups]
+
+    blocks = reject_nonconserved_blocks(blocks, options)
+
+    print("".join(c for c, _ in positions))
     raise NotImplementedError
 
 
@@ -37,6 +43,17 @@ def get_conservation_degree(count: int, has_gaps: bool, options: Options) -> Con
     if count < options.FS:
         return ConservationDegree.Conserved
     return ConservationDegree.HighlyConserved
+
+
+def reject_nonconserved_blocks(blocks: list[Block], options: Options) -> list[Block]:
+    return [reject_nonconserved_block(block, options.CP) for block in blocks]
+
+
+def reject_nonconserved_block(block: Block, threshold: int) -> Block:
+    if block.letter == ConservationDegree.NonConserved:
+        if block.length > threshold:
+            return Block(PositionVerdict.Rejected, block.length)
+    return block
 
 
 def trim_sequences(mask: str, sequences: Iterator[str]) -> Iterator[str]:
