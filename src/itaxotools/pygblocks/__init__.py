@@ -73,12 +73,14 @@ def reject_all_flank_blocks(blocks: list[Block]) -> list[Block]:
 
 
 def reject_left_flank_blocks(blocks: list[Block]) -> Iterator[Block]:
-    pairs = zip(blocks[:-1], blocks[1:])
-    for left, right in pairs:
-        if left.letter != ConservationDegree.HighlyConserved and right.letter == PositionVerdict.Rejected:
-            yield Block(PositionVerdict.Rejected, left.length)
+    memory = None
+    for block in blocks:
+        if block.letter != ConservationDegree.HighlyConserved and memory == PositionVerdict.Rejected:
+            memory = PositionVerdict.Rejected
+            yield Block(PositionVerdict.Rejected, block.length)
         else:
-            yield left
+            memory = block.letter
+            yield block
 
 
 def trim_sequences(mask: str, sequences: Iterator[str]) -> Iterator[str]:
