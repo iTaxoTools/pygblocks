@@ -31,29 +31,39 @@ class FileTest(NamedTuple):
         output_sequences = Sequences.fromPath(self.output_path, SequenceHandler.Fasta)
         mask_sequences = Sequences.fromPath(self.mask_path, SequenceHandler.Fasta)
 
+        # Files are in PIR format but we read as Fasta, so we need to remove
+        # the ending codon (*) at the end of each sequence
+        global_input = list(seq.seq[:-1] for seq in input_sequences)
+        target_output = list(seq.seq[:-1] for seq in output_sequences)
+        target_mask = next(iter(mask_sequences)).seq
+        if target_mask.endswith("*"):
+            target_mask = target_mask[:-1] + "."
+
         print("INPUT:".ljust(50, "-"))
-        for sequence in input_sequences:
+        for sequence in global_input:
             print(sequence)
 
         print("OUTPUT:".ljust(50, "-"))
-        for sequence in output_sequences:
+        for sequence in target_output:
             print(sequence)
 
         print("TARGET MASK:".ljust(50, "-"))
-        for sequence in mask_sequences:
-            print(sequence.seq)
+        print(target_mask)
 
-        mask = compute_mask(sequence.seq for sequence in input_sequences)
-
+        generated_mask = compute_mask(sequence.seq for sequence in input_sequences)
         print("CREATED MASK:".ljust(50, "-"))
-        print(mask)
+        print(generated_mask)
 
-        assert mask == next(iter(mask_sequences)).seq
+        assert generated_mask == target_mask
 
-        results = trim_sequences(mask, (sequence.seq for sequence in output_sequences))
-        assert list(results) == list(output_sequences)
+        generated_output = list(trim_sequences(generated_mask, global_input))
 
-        assert False
+        for generated, target in zip(generated_output, target_output):
+            print(generated)
+            print(target)
+            print("")
+
+        assert generated_output == target_output
 
 
 tests = [

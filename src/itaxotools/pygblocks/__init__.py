@@ -8,26 +8,20 @@ from .types import Block, ConservationDegree, GapCharacters, Options, PositionVe
 def compute_mask(sequences: Iterator[str], options: Options = None) -> str:
     sequences = list(sequences)
     sequence_count = len(sequences)
-    # position_count = len(sequences[0])
 
     options = options or Options.default()
     options.update_from_sequence_count(sequence_count)
 
     transposed = zip(*sequences)
     positions = [analyze_column(column, options) for column in transposed]
-
+    gaps = (has_gaps for _, has_gaps in positions)
     groups = groupby(letter for letter, _ in positions)
     blocks = [Block(letter, sum(1 for _ in group)) for letter, group in groups]
 
     blocks = reject_nonconserved_blocks(blocks, options)
-
     blocks = reject_all_flank_blocks(blocks)
-
     blocks = reject_short_blocks(blocks, options.BL1)
-
-    gaps = (has_gaps for _, has_gaps in positions)
     blocks = reject_gaps_within_blocks(blocks, gaps)
-
     blocks = reject_short_blocks(blocks, options.BL2)
 
     return create_mask_from_blocks(blocks)
