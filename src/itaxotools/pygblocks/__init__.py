@@ -5,7 +5,7 @@ from typing import Iterator
 from .types import Block, ConservationDegree, GapCharacters, Options, PositionVerdict
 
 
-def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
+def compute_mask(sequences: Iterator[str], options: Options = None) -> str:
     sequences = list(sequences)
     sequence_count = len(sequences)
     # position_count = len(sequences[0])
@@ -30,8 +30,7 @@ def compute_blocks(sequences: Iterator[str], options: Options = None) -> str:
 
     blocks = reject_short_blocks(blocks, options.BL2)
 
-    print("".join(c for c, _ in positions))
-    raise NotImplementedError
+    return create_mask_from_blocks(blocks)
 
 
 def analyze_column(column: Iterator[str], options: Options) -> tuple[ConservationDegree, bool]:
@@ -122,6 +121,19 @@ def _reject_gaps_within_blocks(blocks: list[Block], gaps: Iterator[bool]) -> Ite
             for _ in range(block.length):
                 next(gaps)
             yield block
+
+
+def create_mask_from_blocks(blocks: list[Block]) -> str:
+    return "".join(_create_mask_from_blocks(blocks))
+
+
+def _create_mask_from_blocks(blocks: list[Block]) -> Iterator[str]:
+    for block in blocks:
+        letter = PositionVerdict.Accepted
+        if block.letter == PositionVerdict.Rejected:
+            letter = PositionVerdict.Rejected
+        for _ in range(block.length):
+            yield letter
 
 
 def trim_sequences(mask: str, sequences: Iterator[str]) -> Iterator[str]:

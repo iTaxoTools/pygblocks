@@ -5,7 +5,7 @@ from typing import NamedTuple
 
 import pytest
 
-from itaxotools.pygblocks import compute_blocks, trim_sequences
+from itaxotools.pygblocks import compute_mask, trim_sequences
 from itaxotools.taxi2.sequences import SequenceHandler, Sequences
 
 TEST_DATA_DIR = Path(__file__).parent / Path(__file__).stem
@@ -39,12 +39,16 @@ class FileTest(NamedTuple):
         for sequence in output_sequences:
             print(sequence)
 
-        print("MASK:".ljust(50, "-"))
+        print("TARGET MASK:".ljust(50, "-"))
         for sequence in mask_sequences:
-            print(sequence)
+            print(sequence.seq)
 
-        mask = compute_blocks(sequence.seq for sequence in input_sequences)
-        assert mask == next(mask_sequences).seq
+        mask = compute_mask(sequence.seq for sequence in input_sequences)
+
+        print("CREATED MASK:".ljust(50, "-"))
+        print(mask)
+
+        assert mask == next(iter(mask_sequences)).seq
 
         results = trim_sequences(mask, (sequence.seq for sequence in output_sequences))
         assert list(results) == list(output_sequences)
