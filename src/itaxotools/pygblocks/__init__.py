@@ -5,26 +5,69 @@ from typing import Iterator
 from .types import Block, ConservationDegree, GapCharacters, Options, PositionVerdict
 
 
-def compute_mask(sequences: Iterator[str], options: Options = None) -> str:
+def compute_mask(sequences: Iterator[str], options: Options = None, log=False) -> str:
     sequences = list(sequences)
     sequence_count = len(sequences)
 
     options = options or Options.default()
     options.update_from_sequence_count(sequence_count)
 
+    log_options(log, options)
+
     transposed = zip(*sequences)
     positions = [analyze_column(column, options) for column in transposed]
-    gaps = (has_gaps for _, has_gaps in positions)
+    gaps = [has_gaps for _, has_gaps in positions]
     groups = groupby(letter for letter, _ in positions)
     blocks = [Block(letter, sum(1 for _ in group)) for letter, group in groups]
 
+    log_gaps(log, gaps)
+
+    log_blocks(log, "starting blocks", blocks)
+
     blocks = reject_nonconserved_blocks(blocks, options)
+    log_blocks(log, "reject non-conserved", blocks)
+
     blocks = reject_all_flank_blocks(blocks)
+    log_blocks(log, "reject flanks", blocks)
+
     blocks = reject_short_blocks(blocks, options.BL1)
+    log_blocks(log, "reject short 1", blocks)
+
     blocks = reject_gaps_within_blocks(blocks, gaps)
+    log_blocks(log, "reject gaps", blocks)
+
     blocks = reject_short_blocks(blocks, options.BL2)
+    log_blocks(log, "reject short 2", blocks)
 
     return create_mask_from_blocks(blocks)
+
+
+def log_options(log: bool, options: Options) -> None:
+    if not log:
+        return
+    print("OPTIONS:")
+    for option, value in options.as_dict().items():
+        print("-", option + ":", value)
+    print()
+
+
+def log_gaps(log: bool, gaps: list[bool]) -> None:
+    if not log:
+        return
+    print("DETECTED GAPS:")
+    mask = "".join(GapCharacters.Gap if gap else GapCharacters.Any for gap in gaps)
+    print(mask)
+    print()
+
+
+def log_blocks(log: bool, title: str, blocks: list[Block]) -> None:
+    if not log:
+        return
+    title = title.upper() + ":"
+    mask = "".join(block.letter * block.length for block in blocks)
+    print(title)
+    print(mask)
+    print()
 
 
 def analyze_column(column: Iterator[str], options: Options) -> tuple[ConservationDegree, bool]:
@@ -100,7 +143,7 @@ def _reject_short_memorized_block(memory: list[Block], threshold: int) -> Iterat
         yield from memory
 
 
-def reject_gaps_within_blocks(blocks: list[Block], gaps: Iterator[bool]) -> list[Block]:
+def reject_gaps_within_blocks(blocks: list[Block], gaps: list[bool]) -> list[Block]:
     return list(_reject_gaps_within_blocks(blocks, iter(gaps)))
 
 

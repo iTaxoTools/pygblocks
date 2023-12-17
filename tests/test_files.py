@@ -46,21 +46,29 @@ class FileTest(NamedTuple):
         if target_mask.endswith("*"):
             target_mask = target_mask[:-1] + "."
 
-        print("INPUT:".ljust(50, "-"))
+        print("-" * 58)
+        print("INPUT:")
+        print("-" * 58)
         for sequence in global_input:
             print(sequence)
 
-        print("OUTPUT:".ljust(50, "-"))
-        for sequence in target_output:
-            print(sequence)
+        # print("-" * 58)
+        # print("TARGET OUTPUT:")
+        # print("-" * 58)
+        # for sequence in target_output:
+        #     print(sequence)
 
-        print("TARGET MASK:".ljust(50, "-"))
-        print(target_mask)
+        print("-" * 58)
+        print()
 
         input = (sequence.seq for sequence in input_sequences)
-        generated_mask = compute_mask(input, self.options)
-        print("CREATED MASK:".ljust(50, "-"))
+        generated_mask = compute_mask(input, self.options, log=True)
+
+        print("CREATED MASK:")
         print(generated_mask)
+
+        print("TARGET MASK:")
+        print(target_mask)
 
         assert generated_mask == target_mask
 

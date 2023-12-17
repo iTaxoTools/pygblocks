@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from enum import StrEnum
 from typing import NamedTuple
 
@@ -31,6 +31,9 @@ class Options:
         self.IS = self.IS or round(count * self.IS_percent) + 1
         self.FS = self.FS or round(count * self.FS_percent)
 
+    def as_dict(self):
+        return asdict(self)
+
 
 class ConservationDegree(StrEnum):
     NonConserved = "?"
@@ -45,7 +48,7 @@ class PositionVerdict(StrEnum):
 
 class GapCharacters(StrEnum):
     Gap = "-"
-    Any = "+"
+    Any = "."
 
 
 class Block(NamedTuple):
