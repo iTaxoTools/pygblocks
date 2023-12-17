@@ -16,6 +16,7 @@ class FileTest(NamedTuple):
     output_filename: str
     mask_filename: str
     options_dict: dict[str, int | float]
+    is_pir: bool = True
 
     @property
     def input_path(self) -> Path:
@@ -38,13 +39,18 @@ class FileTest(NamedTuple):
         output_sequences = Sequences.fromPath(self.output_path, SequenceHandler.Fasta)
         mask_sequences = Sequences.fromPath(self.mask_path, SequenceHandler.Fasta)
 
-        # Files are in PIR format but we read as Fasta, so we need to remove
-        # the ending codon (*) at the end of each sequence
-        global_input = list(seq.seq[:-1] for seq in input_sequences)
-        target_output = list(seq.seq[:-1] for seq in output_sequences)
-        target_mask = next(iter(mask_sequences)).seq
-        if target_mask.endswith("*"):
-            target_mask = target_mask[:-1] + "."
+        if self.is_pir:
+            # Files are in PIR format but we read as Fasta, so we need to remove
+            # the ending codon (*) at the end of each sequence
+            global_input = list(seq.seq[:-1] for seq in input_sequences)
+            target_output = list(seq.seq[:-1] for seq in output_sequences)
+            target_mask = next(iter(mask_sequences)).seq
+            if target_mask.endswith("*"):
+                target_mask = target_mask[:-1] + "."
+        else:
+            global_input = list(seq.seq for seq in input_sequences)
+            target_output = list(seq.seq for seq in output_sequences)
+            target_mask = next(iter(mask_sequences)).seq
 
         print("-" * 58)
         print("INPUT:")
@@ -130,6 +136,13 @@ tests = [
         "cytb.pir-gbv",
         "cytb.pir-gbvMask",
         dict(IS=0, FS=0, CP=5, BL1=0, BL2=6, IS_percent=0.50, FS_percent=0.85),
+    ),
+    FileTest(
+        "mafft.fas",
+        "mafft.fas-gb",
+        "mafft.fas-gbMask",
+        dict(IS=0, FS=0, CP=8, BL1=0, BL2=10, IS_percent=0.50, FS_percent=0.85),
+        is_pir=False,
     ),
 ]
 
