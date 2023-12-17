@@ -150,7 +150,7 @@ def reject_gaps_within_blocks(blocks: list[Block], gaps: list[bool]) -> list[Blo
 def _reject_gaps_within_blocks(blocks: list[Block], gaps: Iterator[bool]) -> Iterator[Block]:
     for block in blocks:
         if block.letter == ConservationDegree.NonConserved:
-            if any((next(gaps) for _ in range(block.length))):
+            if any([next(gaps) for _ in range(block.length)]):
                 yield Block(PositionVerdict.Rejected, block.length)
             else:
                 yield block
