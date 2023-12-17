@@ -87,25 +87,49 @@ tests = [
         "nad3.pir",
         "nad3.pir-gb",
         "nad3.pir-gbMask",
-        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+        dict(IS=0, FS=0, CP=8, BL1=0, BL2=10, IS_percent=0.50, FS_percent=0.85),
     ),
     FileTest(
         "nad5.pir",
         "nad5.pir-gb",
         "nad5.pir-gbMask",
-        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+        dict(IS=0, FS=0, CP=8, BL1=0, BL2=10, IS_percent=0.50, FS_percent=0.85),
     ),
     FileTest(
         "cox2.pir",
         "cox2.pir-gb",
         "cox2.pir-gbMask",
-        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+        dict(IS=0, FS=0, CP=8, BL1=0, BL2=10, IS_percent=0.50, FS_percent=0.85),
     ),
     FileTest(
         "cytb.pir",
         "cytb.pir-gb",
         "cytb.pir-gbMask",
-        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+        dict(IS=0, FS=0, CP=8, BL1=0, BL2=10, IS_percent=0.50, FS_percent=0.85),
+    ),
+    FileTest(
+        "nad3.pir",
+        "nad3.pir-gbv",
+        "nad3.pir-gbvMask",
+        dict(IS=0, FS=0, CP=1, BL1=0, BL2=3, IS_percent=0.50, FS_percent=0.85),
+    ),
+    FileTest(
+        "nad5.pir",
+        "nad5.pir-gbv",
+        "nad5.pir-gbvMask",
+        dict(IS=9, FS=9, CP=4, BL1=0, BL2=2, IS_percent=0, FS_percent=0),
+    ),
+    FileTest(
+        "cox2.pir",
+        "cox2.pir-gbv",
+        "cox2.pir-gbvMask",
+        dict(IS=9, FS=12, CP=0, BL1=0, BL2=2, IS_percent=0, FS_percent=0),
+    ),
+    FileTest(
+        "cytb.pir",
+        "cytb.pir-gbv",
+        "cytb.pir-gbvMask",
+        dict(IS=0, FS=0, CP=5, BL1=0, BL2=6, IS_percent=0.50, FS_percent=0.85),
     ),
 ]
 
