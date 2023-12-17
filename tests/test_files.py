@@ -5,26 +5,33 @@ from typing import NamedTuple
 
 import pytest
 
-from itaxotools.pygblocks import compute_mask, trim_sequences
+from itaxotools.pygblocks import Options, compute_mask, trim_sequences
 from itaxotools.taxi2.sequences import SequenceHandler, Sequences
 
 TEST_DATA_DIR = Path(__file__).parent / Path(__file__).stem
 
 
 class FileTest(NamedTuple):
-    file_prefix: str
+    input_filename: str
+    output_filename: str
+    mask_filename: str
+    options_dict: dict[str, int | float]
 
     @property
     def input_path(self) -> Path:
-        return TEST_DATA_DIR / self.file_prefix
+        return TEST_DATA_DIR / self.input_filename
 
     @property
     def output_path(self) -> Path:
-        return TEST_DATA_DIR / (self.file_prefix + "-gb")
+        return TEST_DATA_DIR / self.output_filename
 
     @property
     def mask_path(self) -> Path:
-        return TEST_DATA_DIR / (self.file_prefix + "-gbMask")
+        return TEST_DATA_DIR / self.mask_filename
+
+    @property
+    def options(self) -> Options:
+        return Options(**self.options_dict)
 
     def validate(self) -> None:
         input_sequences = Sequences.fromPath(self.input_path, SequenceHandler.Fasta)
@@ -50,7 +57,8 @@ class FileTest(NamedTuple):
         print("TARGET MASK:".ljust(50, "-"))
         print(target_mask)
 
-        generated_mask = compute_mask(sequence.seq for sequence in input_sequences)
+        input = (sequence.seq for sequence in input_sequences)
+        generated_mask = compute_mask(input, self.options)
         print("CREATED MASK:".ljust(50, "-"))
         print(generated_mask)
 
@@ -67,7 +75,30 @@ class FileTest(NamedTuple):
 
 
 tests = [
-    FileTest("nad3.pir"),
+    FileTest(
+        "nad3.pir",
+        "nad3.pir-gb",
+        "nad3.pir-gbMask",
+        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+    ),
+    FileTest(
+        "nad5.pir",
+        "nad5.pir-gb",
+        "nad5.pir-gbMask",
+        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+    ),
+    FileTest(
+        "cox2.pir",
+        "cox2.pir-gb",
+        "cox2.pir-gbMask",
+        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+    ),
+    FileTest(
+        "cytb.pir",
+        "cytb.pir-gb",
+        "cytb.pir-gbMask",
+        dict(IS=0, FS=0, CP=8, BL1=10, BL2=10, IS_percent=0.50, FS_percent=0.85),
+    ),
 ]
 
 
