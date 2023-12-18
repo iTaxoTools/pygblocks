@@ -173,11 +173,11 @@ def _create_mask_from_blocks(blocks: list[Block]) -> Iterator[str]:
             yield letter
 
 
-def trim_sequences(mask: str, sequences: Iterator[str]) -> Iterator[str]:
+def trim_sequences(sequences: Iterator[str], mask: str) -> Iterator[str]:
     for sequence in sequences:
-        yield trim_sequence(mask, sequence)
+        yield trim_sequence(sequence, mask)
 
 
-def trim_sequence(mask: str, sequence: str) -> str:
+def trim_sequence(sequence: str, mask: str) -> str:
     filtered = filter(lambda c_m: c_m[1] != ".", zip(sequence, mask))
     return "".join(c for c, _ in filtered)

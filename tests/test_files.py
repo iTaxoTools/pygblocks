@@ -78,7 +78,7 @@ class FileTest(NamedTuple):
 
         assert generated_mask == target_mask
 
-        generated_output = list(trim_sequences(generated_mask, global_input))
+        generated_output = list(trim_sequences(global_input, generated_mask))
 
         for generated, target in zip(generated_output, target_output):
             print(generated)
