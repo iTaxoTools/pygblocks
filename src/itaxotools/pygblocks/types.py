@@ -7,15 +7,20 @@ from typing import NamedTuple
 
 @dataclass
 class Options:
-    # No support for similarity matrix or gap positions
+    # No support for similarity matrix
+
     IS: int  # Minimum Number Of Sequences For A Conserved Position
     FS: int  # Minimum Number Of Sequences For A Flank Position
     CP: int  # Maximum Number Of Contiguous Nonconserved Positions
     BL1: int  # Minimum Length Of A Block, 1st iteration
     BL2: int  # Minimum Length Of A Block, 2nd iteration
 
+    GC: str = "-"  # Gap Characters
+    GT: int = 0  # Gap Threshold
+
     IS_percent: float = 0.50
     FS_percent: float = 0.85
+    GT_percent: float = 0.00
 
     @classmethod
     def default(cls) -> Options:

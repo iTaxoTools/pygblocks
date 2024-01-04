@@ -15,6 +15,7 @@ class ColumnTest(NamedTuple):
     has_gaps: bool
     IS: int
     FS: int
+    GC: str
 
     @property
     def letter_chain(self) -> Iterator[str]:
@@ -22,16 +23,19 @@ class ColumnTest(NamedTuple):
 
 
 tests = [
-    ColumnTest("AAA-", ConservationDegree.NonConserved, True, 2, 3),
-    ColumnTest("ACGT", ConservationDegree.NonConserved, False, 2, 3),
-    ColumnTest("AACC", ConservationDegree.Conserved, False, 2, 3),
-    ColumnTest("AAAC", ConservationDegree.HighlyConserved, False, 2, 3),
-    ColumnTest("AAAA", ConservationDegree.HighlyConserved, False, 2, 3),
+    ColumnTest("AAA-", ConservationDegree.NonConserved, True, 2, 3, "-"),
+    ColumnTest("ACGT", ConservationDegree.NonConserved, False, 2, 3, "-"),
+    ColumnTest("AACC", ConservationDegree.Conserved, False, 2, 3, "-"),
+    ColumnTest("AAAC", ConservationDegree.HighlyConserved, False, 2, 3, "-"),
+    ColumnTest("AAAA", ConservationDegree.HighlyConserved, False, 2, 3, "-"),
+    ColumnTest("AAC-", ConservationDegree.Conserved, False, 2, 3, "?"),
+    ColumnTest("AAC?", ConservationDegree.NonConserved, True, 2, 3, "?"),
+    ColumnTest("AACN", ConservationDegree.NonConserved, True, 2, 3, "N"),
 ]
 
 
 @pytest.mark.parametrize("test", tests)
 def test_column_analysis(test: ColumnTest):
-    options = Options(IS=test.IS, FS=test.FS, CP=0, BL1=0, BL2=0)
+    options = Options(IS=test.IS, FS=test.FS, CP=0, BL1=0, BL2=0, GC=test.GC)
     target = (test.conservation_degree, test.has_gaps)
     assert analyze_column(test.letter_chain, options) == target

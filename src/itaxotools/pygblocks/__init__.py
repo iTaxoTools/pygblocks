@@ -72,12 +72,17 @@ def log_blocks(log: bool, title: str, blocks: list[Block]) -> None:
 
 def analyze_column(column: Iterator[str], options: Options) -> tuple[ConservationDegree, bool]:
     counter = Counter(column)
-    has_gaps = GapCharacters.Gap in counter
+    has_gaps = _check_for_gaps(counter, options)
+    print("???", has_gaps)
     first_common, *others = counter.most_common(2)
     if first_common[0] == GapCharacters.Gap and others:
         first_common = others[0]
     conservation_degree = _get_conservation_degree(first_common[1], has_gaps, options)
     return (conservation_degree, has_gaps)
+
+
+def _check_for_gaps(counter: Counter, options: Options) -> bool:
+    return any(gap in counter for gap in options.GC)
 
 
 def _get_conservation_degree(count: int, has_gaps: bool, options: Options) -> ConservationDegree:
