@@ -15,8 +15,8 @@ class Options:
     BL1: int  # Minimum Length Of A Block, 1st iteration
     BL2: int  # Minimum Length Of A Block, 2nd iteration
 
-    GC: str = "-"  # Gap Characters
-    GT: int = 0  # Gap Threshold
+    GT: int = 0  # Maximum Number of Allowed Gaps For Any Position
+    GC: str = "-"  # Definition of Gap Characters
 
     IS_percent: float = 0.50
     FS_percent: float = 0.85
@@ -35,6 +35,7 @@ class Options:
     def update_from_sequence_count(self, count: int):
         self.IS = self.IS or round(count * self.IS_percent) + 1
         self.FS = self.FS or round(count * self.FS_percent)
+        self.GT = self.GT or round(count * self.GT_percent)
 
     def as_dict(self):
         return asdict(self)
