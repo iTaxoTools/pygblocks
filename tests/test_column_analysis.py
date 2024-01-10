@@ -2,11 +2,8 @@ from typing import Iterator, NamedTuple
 
 import pytest
 
-from itaxotools.pygblocks import (
-    ConservationDegree,
-    Options,
-    analyze_column,
-)
+from itaxotools.pygblocks.steps import analyze_column
+from itaxotools.pygblocks.types import ConservationDegree, Options
 
 
 class ColumnTest(NamedTuple):

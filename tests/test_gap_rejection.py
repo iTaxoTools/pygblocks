@@ -3,13 +3,8 @@ from typing import NamedTuple
 
 import pytest
 
-from itaxotools.pygblocks import (
-    Block,
-    ConservationDegree,
-    GapCharacters,
-    PositionVerdict,
-    reject_gaps_within_blocks,
-)
+from itaxotools.pygblocks.steps import reject_gaps_within_blocks
+from itaxotools.pygblocks.types import Block, ConservationDegree, GapCharacters, PositionVerdict
 
 
 class BlockTest(NamedTuple):

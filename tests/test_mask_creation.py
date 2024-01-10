@@ -2,12 +2,8 @@ from typing import NamedTuple
 
 import pytest
 
-from itaxotools.pygblocks import (
-    Block,
-    ConservationDegree,
-    PositionVerdict,
-    create_mask_from_blocks,
-)
+from itaxotools.pygblocks.steps import create_mask_from_blocks
+from itaxotools.pygblocks.types import Block, ConservationDegree, PositionVerdict
 
 
 class MaskTest(NamedTuple):

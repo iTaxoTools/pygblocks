@@ -2,13 +2,8 @@ from typing import NamedTuple
 
 import pytest
 
-from itaxotools.pygblocks import (
-    Block,
-    ConservationDegree,
-    Options,
-    PositionVerdict,
-    reject_nonconserved_blocks,
-)
+from itaxotools.pygblocks.steps import reject_nonconserved_blocks
+from itaxotools.pygblocks.types import Block, ConservationDegree, Options, PositionVerdict
 
 
 class BlockTest(NamedTuple):
