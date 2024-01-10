@@ -74,7 +74,6 @@ def analyze_column(column: Iterator[str], options: Options) -> tuple[Conservatio
     counter = Counter(column)
     counter, has_gaps = _check_for_gaps(counter, options)
     most_common = counter.most_common(1)
-    print(most_common, has_gaps)
     if not most_common:
         return ConservationDegree.NonConserved, has_gaps
     conservation_degree = _get_conservation_degree(most_common[0][1], has_gaps, options)
