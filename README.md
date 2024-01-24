@@ -1,5 +1,12 @@
 # PyGblocks
 
+[![PyPI - Version](https://img.shields.io/pypi/v/itaxotools-pygblocks)](
+    https://pypi.org/project/itaxotools-pygblocks)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/itaxotools-pygblocks)](
+    https://pypi.org/project/itaxotools-pygblocks)
+[![GitHub - Tests](https://img.shields.io/github/actions/workflow/status/iTaxoTools/pygblocks/test.yml?label=tests)](
+    https://github.com/iTaxoTools/pygblocks/actions/workflows/test.yml)
+
 Pure Python implementation for the algorithm behind Gblocks.
 
 ## Differences
