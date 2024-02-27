@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import List, NamedTuple
 
 import pytest
 
@@ -7,7 +7,7 @@ from itaxotools.pygblocks.types import Block, ConservationDegree, PositionVerdic
 
 
 class MaskTest(NamedTuple):
-    blocks: list[Block]
+    blocks: List[Block]
     mask: str
 
 

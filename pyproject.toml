@@ -7,7 +7,7 @@ name = "itaxotools-pygblocks"
 dynamic = ["version"]
 description = "Python implementation for Gblocks"
 readme = "README.md"
-requires-python = ">=3.11, <4"
+requires-python = ">=3.8.6, <4"
 keywords = []
 authors = [
     { name = "StefanPatman", email = "stefanpatman91@gmail.com" },

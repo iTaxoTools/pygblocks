@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections import Counter
 from itertools import groupby
-from typing import Iterator
+from typing import Iterator, List
 
 from .types import Block, ConservationDegree, GapCharacters, Options, PositionVerdict
 
@@ -51,7 +53,7 @@ def _log_options(log: bool, options: Options) -> None:
     print()
 
 
-def _log_gaps(log: bool, gaps: list[bool]) -> None:
+def _log_gaps(log: bool, gaps: List[bool]) -> None:
     if not log:
         return
     print("DETECTED GAPS:")
@@ -60,7 +62,7 @@ def _log_gaps(log: bool, gaps: list[bool]) -> None:
     print()
 
 
-def _log_blocks(log: bool, title: str, blocks: list[Block]) -> None:
+def _log_blocks(log: bool, title: str, blocks: List[Block]) -> None:
     if not log:
         return
     title = title.upper() + ":"
@@ -98,7 +100,7 @@ def _get_conservation_degree(count: int, has_gaps: bool, options: Options) -> Co
     return ConservationDegree.HighlyConserved
 
 
-def reject_nonconserved_blocks(blocks: list[Block], options: Options) -> list[Block]:
+def reject_nonconserved_blocks(blocks: List[Block], options: Options) -> List[Block]:
     return [_reject_nonconserved_block(block, options.CP) for block in blocks]
 
 
@@ -109,13 +111,13 @@ def _reject_nonconserved_block(block: Block, threshold: int) -> Block:
     return block
 
 
-def reject_all_flank_blocks(blocks: list[Block]) -> list[Block]:
+def reject_all_flank_blocks(blocks: List[Block]) -> List[Block]:
     blocks = list(_reject_left_flank_blocks(blocks))
     blocks = list(_reject_left_flank_blocks(blocks[::-1]))
     return blocks[::-1]
 
 
-def _reject_left_flank_blocks(blocks: list[Block]) -> Iterator[Block]:
+def _reject_left_flank_blocks(blocks: List[Block]) -> Iterator[Block]:
     memory = None
     for block in blocks:
         if block.letter != ConservationDegree.HighlyConserved and memory == PositionVerdict.Rejected:
@@ -126,12 +128,12 @@ def _reject_left_flank_blocks(blocks: list[Block]) -> Iterator[Block]:
             yield block
 
 
-def reject_short_blocks(blocks: list[Block], threshold: int) -> list[Block]:
+def reject_short_blocks(blocks: List[Block], threshold: int) -> List[Block]:
     return list(_reject_short_blocks(blocks, threshold))
 
 
-def _reject_short_blocks(blocks: list[Block], threshold: int) -> Iterator[Block]:
-    memory: list[Block] = []
+def _reject_short_blocks(blocks: List[Block], threshold: int) -> Iterator[Block]:
+    memory: List[Block] = []
     for block in blocks:
         if block.letter == PositionVerdict.Rejected:
             yield from _reject_short_memorized_block(memory, threshold)
@@ -142,7 +144,7 @@ def _reject_short_blocks(blocks: list[Block], threshold: int) -> Iterator[Block]
     yield from _reject_short_memorized_block(memory, threshold)
 
 
-def _reject_short_memorized_block(memory: list[Block], threshold: int) -> Iterator[Block]:
+def _reject_short_memorized_block(memory: List[Block], threshold: int) -> Iterator[Block]:
     length = sum(b.length for b in memory)
     if 0 < length < threshold:
         yield Block(PositionVerdict.Rejected, length)
@@ -151,11 +153,11 @@ def _reject_short_memorized_block(memory: list[Block], threshold: int) -> Iterat
         yield from memory
 
 
-def reject_gaps_within_blocks(blocks: list[Block], gaps: list[bool]) -> list[Block]:
+def reject_gaps_within_blocks(blocks: List[Block], gaps: List[bool]) -> List[Block]:
     return list(_reject_gaps_within_blocks(blocks, iter(gaps)))
 
 
-def _reject_gaps_within_blocks(blocks: list[Block], gaps: Iterator[bool]) -> Iterator[Block]:
+def _reject_gaps_within_blocks(blocks: List[Block], gaps: Iterator[bool]) -> Iterator[Block]:
     for block in blocks:
         if block.letter == ConservationDegree.NonConserved:
             if any([next(gaps) for _ in range(block.length)]):
@@ -168,11 +170,11 @@ def _reject_gaps_within_blocks(blocks: list[Block], gaps: Iterator[bool]) -> Ite
             yield block
 
 
-def create_mask_from_blocks(blocks: list[Block]) -> str:
+def create_mask_from_blocks(blocks: List[Block]) -> str:
     return "".join(_create_mask_from_blocks(blocks))
 
 
-def _create_mask_from_blocks(blocks: list[Block]) -> Iterator[str]:
+def _create_mask_from_blocks(blocks: List[Block]) -> Iterator[str]:
     for block in blocks:
         letter = PositionVerdict.Accepted
         if block.letter == PositionVerdict.Rejected:

@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import List, NamedTuple
 
 import pytest
 
@@ -7,8 +7,8 @@ from itaxotools.pygblocks.types import Block, ConservationDegree, Options, Posit
 
 
 class BlockTest(NamedTuple):
-    before: list[Block]
-    after: list[Block]
+    before: List[Block]
+    after: List[Block]
     CP: int
 
 

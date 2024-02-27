@@ -1,5 +1,5 @@
 from itertools import groupby
-from typing import NamedTuple
+from typing import List, NamedTuple
 
 import pytest
 
@@ -8,16 +8,16 @@ from itaxotools.pygblocks.types import Block, ConservationDegree, GapCharacters,
 
 
 class BlockTest(NamedTuple):
-    before: list[Block]
-    after: list[Block]
-    gaps: list[bool]
+    before: List[Block]
+    after: List[Block]
+    gaps: List[bool]
 
 
-def gaps_from_mask(mask: str) -> list[bool]:
+def gaps_from_mask(mask: str) -> List[bool]:
     return [bool(letter == GapCharacters.Gap) for letter in mask]
 
 
-def blocks_from_mask(mask: str) -> list[Block]:
+def blocks_from_mask(mask: str) -> List[Block]:
     return [Block(k, sum(1 for _ in g)) for k, g in groupby(mask)]
 
 
